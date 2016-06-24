@@ -44,6 +44,8 @@ public class SocketClientWorker {
                     System.err.println("Cannot open connection to '" + host + ":" + port + "': Connection Refused.\n\n");
                 } else if("Connection timed out: connect".equals(ex.getMessage())) {
                     System.err.println("Cannot open connection to '" + host + ":" + port + "': Connection Timed Out.\n\n");
+                } else {
+                    System.err.println("Cannot open connection to '" + host + ":" + port + "': "+ex.getMessage()+".\n\n");
                 }
             } else {
                 ex.printStackTrace();
