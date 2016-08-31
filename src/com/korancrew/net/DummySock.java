@@ -39,7 +39,14 @@ public class DummySock {
             } else if("client".equals(mode)) {
                 String hostPort = args[a];
                 String _hostPorts[] = hostPort.split(":");
-                new SocketClientWorker(_hostPorts[0], Integer.parseInt(_hostPorts[1])).doTest();
+                // let's support multiple ports for single IP Address
+                // e.g: localhost:1234,5555,6666,7777 instead of
+                // localhost:1234 localhost:5555
+                String[] _ports = _hostPorts[1].split(",");
+                for(int b = 0; b < _ports.length; b++) {
+                    String _port = _ports[b];
+                    new SocketClientWorker(_hostPorts[0], Integer.parseInt(_port)).doTest();
+                }
             }
         }
     }

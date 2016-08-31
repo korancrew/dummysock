@@ -1,7 +1,7 @@
 package com.korancrew.net;
 
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
@@ -23,8 +23,10 @@ public class SocketClientWorker {
         InputStream in = null;
         try {
             System.out.println("Opening connection to '"+ host + ":" + port + "' ...");
-            socket = new Socket(host, port);
-            System.out.println(".... OK, connected!\n\n");
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port), 5000);
+            //socket.setSoTimeout(5000);
+            System.out.println(".... OK, connected!\n");
             
             in = socket.getInputStream();
             if(in.available() > 0) {
@@ -33,7 +35,7 @@ public class SocketClientWorker {
             
             Thread.currentThread().sleep(5000);
             if(socket.isConnected() && !socket.isClosed()) {
-                System.out.println("Force closing connection.\n\n");
+                System.out.println("Force closing connection.\n");
                 IOUtil.close(in);
                 IOUtil.close(socket);
             }
@@ -41,12 +43,14 @@ public class SocketClientWorker {
             //ex.printStackTrace();
             if(ex instanceof java.net.ConnectException) {
                 if("Connection refused".equals(ex.getMessage())) {
-                    System.err.println("Cannot open connection to '" + host + ":" + port + "': Connection Refused.\n\n");
+                    System.err.println("Cannot open connection to '" + host + ":" + port + "': Connection Refused.\n");
                 } else if("Connection timed out: connect".equals(ex.getMessage())) {
-                    System.err.println("Cannot open connection to '" + host + ":" + port + "': Connection Timed Out.\n\n");
+                    System.err.println("Cannot open connection to '" + host + ":" + port + "': Connection Timed Out.\n");
                 } else {
-                    System.err.println("Cannot open connection to '" + host + ":" + port + "': "+ex.getMessage()+".\n\n");
+                    System.err.println("Cannot open connection to '" + host + ":" + port + "': "+ex.getMessage()+".\n");
                 }
+            } else if(ex instanceof java.net.SocketTimeoutException) {
+                System.err.println("Cannot open connection to '" + host + ":" + port + "': Connection Timed Out.\n");
             } else {
                 ex.printStackTrace();
             }
